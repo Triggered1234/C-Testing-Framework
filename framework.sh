@@ -1,6 +1,8 @@
 #!/bin/bash
+
+#---------- GLOBALS ----------
+
 SECONDS=0
-# Set the paths
 COMPILATION_FAILED_INDEX=0
 CHECK_INDEX=0
 CHECK_FAILED_INDEX=0
@@ -8,21 +10,76 @@ CHECK_TODO_INDEX=0
 CHECK_TODO_STRING=""
 FILE_INDEX=0
 COMPILATION_FAILED_STRING=""
-SOURCE_FOLDER="$1"
-OUTPUT_FOLDER="Output"
-CHECK_FOLDER="checks"
 LOG_FILE="frameworklogs.txt"
 PATH="$PATH:C:\MinGW\bin"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
+SOURCE_FOLDER=""
+CHECK_FOLDER=""
+OUTPUT_FOLDER="Output"
+
+#---------- HELP FLAG ----------
+
+if [[ $1 == "--help" ]]; then
+    echo -e "${YELLOW}Syntax: ./framework.sh <source_folder> <checks_folder> <output_folder>"
+    echo -e "${YELLOW}The first 2 arguments are mandatory and the third one is optional."
+    echo -e "${YELLOW}If no output_folder is given, then it will be automatically created as Output."
+    echo -e "${YELLOW}If the output_folder given doesn't exist, then an output_folder will be created with the given name."
+    exit
+fi
+
+#---------- ARGUMENTS VALIDATION ----------
+
+if [[ $# -le 1 ]]; then
+    echo -e "${RED}Not enough arguments given! Minimum number of arguments: 2 -->\n
+    1: Path to source directory with .c files\n
+    2: Path to Tests directory with .check files"
+    exit
+fi
+
+#---------- ARGUMENTS VALIDATION ----------
+
+if [[ $# -eq 2 ]]; then
+    SOURCE_FOLDER=$1
+    CHECK_FOLDER=$2
+    mkdir -p "$OUTPUT_FOLDER"
+    if [[ ! -d $2 ]]; then
+        echo "No such path to a directory: $2"
+        exit
+    fi
+fi
+
+if [[ $# -eq 3 ]]; then
+    SOURCE_FOLDER=$1
+    CHECK_FOLDER=$2
+    OUTPUT_FOLDER=$3
+    if [[ ! -d $2 ]]; then
+        echo "No such path to a directory: $2"
+        exit
+    fi
+    if [[ ! -d $3 ]]; then
+        mkdir -p "$OUTPUT_FOLDER"
+    fi
+fi
+
+if [[ $# -gt 3 ]]; then
+    echo -e "${RED}Too many arguments given! Maximum number of arguments: 3"
+    exit
+fi
+
 > "$LOG_FILE"
-# Create Output folder if it doesn't exist
-mkdir -p "$OUTPUT_FOLDER"
+
 echo "------------------->Running C Testing framework<-------------------"
 
-# Function to compile C programs
+# COMPILATION FUNCTION
+# 1. Receives source files and their paths.
+# 2. Tries compiling them.
+# 3. If successful, displays success message and increments success index, creates output file, returns.
+# 4. If failed, displays failed message, increments failed index, returns.
+# --------------------------------------------------------------------------------
+
 compile_program() {
     echo -e "${NC}----------------------------------------------------------------------------------------"
     local source_file="$1"
@@ -46,7 +103,13 @@ compile_program() {
     fi
 }
 
-# Function to run C programs
+# RUNNING FUNCTION
+# 1. Receives source files and their paths.
+# 2. Tries executing them
+# 3. If successful displays success message, returns.
+# 4. If failed, displays error message, returns.
+# --------------------------------------------------------------------------------
+
 run_program() {
     local source_file="$1"
     local relative_path="${source_file#$SOURCE_FOLDER/}"
@@ -66,7 +129,14 @@ run_program() {
     fi
 }
 
-# Function to compare output with check file
+# RUNNING FUNCTION
+# 1. Receives source files, check files and their paths.
+# 2. Compares source files output to expected output from check files
+# 3. If successful displays success message, increments check success index, returns.
+# 4. If failed, displays error message, increments check failed index, returns.
+# 5. If no checks are found, displays warning message, increments checks todo index, returns.
+# ---------------------------------------------------------------------------------------
+
 compare_output() {
     local source_file="$1"
     local relative_path="${source_file#$SOURCE_FOLDER/}"
@@ -99,13 +169,14 @@ compare_output() {
 
 exec > >(tee -a "$LOG_FILE") 2> >(tee -a "$LOG_FILE" >&2)
 
-# Find C source files in the source folder and its subfolders
 while IFS= read -r -d $'\0' source_file; do
     ((FILE_INDEX++))
     compile_program "$source_file" && run_program "$source_file" && compare_output "$source_file"
 done < <(find "$SOURCE_FOLDER" -name "*.c" -type f -print0)
 
 duration=$SECONDS
+
+#----------------------------------------------Logging----------------------------------------------
 
 echo -e "${NC}----------------------------------------------------------------------------------------"
 
