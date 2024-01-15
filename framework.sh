@@ -1,15 +1,58 @@
 #!/bin/bash
 # Set the paths
-SOURCE_FOLDER=$1
-OUTPUT_FOLDER="Output"
-CHECK_FOLDER="checks"
 LOG_FILE="frameworklogs.txt"
 PATH="$PATH:C:\MinGW\bin"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
-# Create Output folder if it doesn't exist
-mkdir -p "$OUTPUT_FOLDER"
+SOURCE_FOLDER=""
+CHECK_FOLDER=""
+OUTPUT_FOLDER="Output"
+
+if [[ $1 == "--help" ]]; then
+    echo -e "${YELLOW}Syntax: ./framework.sh <source_folder> <checks_folder> <output_folder>"
+    echo -e "${YELLOW}The first 2 arguments are mandatory and the third one is optional."
+    echo -e "${YELLOW}If no output_folder is given, then it will be automatically created as Output."
+    echo -e "${YELLOW}If the output_folder given doesn't exist, then an output_folder will be created with the given name."
+    exit
+fi
+
+if [[ $# -le 1 ]]; then
+    echo -e "${RED}Not enough arguments given! Minimum number of arguments: 2 -->\n
+    1: Path to source directory with .c files\n
+    2: Path to Tests directory with .check files"
+    exit
+fi
+
+if [[ $# -eq 2 ]]; then
+    SOURCE_FOLDER=$1
+    CHECK_FOLDER=$2
+    mkdir -p "$OUTPUT_FOLDER"
+    if [[ ! -d $2 ]]; then
+        echo "No such path to a directory: $2"
+        exit
+    fi
+fi
+
+if [[ $# -eq 3 ]]; then
+    SOURCE_FOLDER=$1
+    CHECK_FOLDER=$2
+    OUTPUT_FOLDER=$3
+    if [[ ! -d $2 ]]; then
+        echo "No such path to a directory: $2"
+        exit
+    fi
+    if [[ ! -d $3 ]]; then
+        mkdir -p "$OUTPUT_FOLDER"
+    fi
+fi
+
+if [[ $# -gt 3 ]]; then
+    echo -e "${RED}Too many arguments given! Maximum number of arguments: 3"
+    exit
+fi
+
 echo "Running C Testing framework"
 # Function to compile C programs
 compile_program() {
@@ -78,6 +121,7 @@ compare_output() {
 exec > >(tee -a "$LOG_FILE") 2> >(tee -a "$LOG_FILE" >&2)
 
 # Find C source files in the source folder
+
 find "$SOURCE_FOLDER" -name "*.c" -print0 | while IFS= read -r -d $'\0' source_file; do
     compile_program "$source_file" && run_program "$source_file" && compare_output "$source_file"
 done
