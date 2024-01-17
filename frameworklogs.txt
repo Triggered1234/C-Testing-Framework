@@ -1,96 +1,57 @@
-[0m--------------------------------------------
-Trying to compile source/file1.c...
-[0;31mCompilation failed for source/file1.c.[0m
-[0;31msource/file1.c: In function 'main':
-[0;31msource/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
-[0m--------------------------------------------
-Trying to compile source/file2.c...
-[0;32msource/file2.c compiled successfully![0m
-Executing source/file2.c...
+[0m----------------------------------------------------------------------------------------
+Trying to compile file1.c...
+[0;32mfile1.c compiled successfully![0m
+Executing file1.c...
+Hello from file1.c
+[0;32mfile1.c executed successfully.[0m
+Running tests on file1.c
+[0;32mfile1.c output matches the test file.
+[0m----------------------------------------------------------------------------------------
+Trying to compile file2.c...
+[0;32mfile2.c compiled successfully![0m
+Executing file2.c...
 Hello from  file2.c
-[0;32msource/file2.c executed successfully.[0m
-Running checks on source/file2.c
-[0;31mTest FAILED at source/file2.c:
+[0;32mfile2.c executed successfully.[0m
+Running tests on file2.c
+[0;31mTest FAILED at file2.c:
 Actual output:
 Hello from  file2.c
 Expected output:
+Hello from file2.c
+[0m----------------------------------------------------------------------------------------
+Trying to compile file3.c...
+[0;31mCompilation failed for file3.c.[0m
+[0;31msource/file3.c: In function 'main':
+[0;31msource/file3.c:5:5: error: expected ';' before 'return'
+[0;31m     return 0;
+[0;31m     ^~~~~~
+[0m----------------------------------------------------------------------------------------
+Trying to compile source2/file1 copy.c...
+[0;32msource2/file1 copy.c compiled successfully![0m
+Executing source2/file1 copy.c...
+Hello from file1.c
+[0;32msource2/file1 copy.c executed successfully.[0m
+Running tests on source2/file1 copy.c
+No test file found for source2/file1 copy.c.
+[0m----------------------------------------------------------------------------------------
+Trying to compile source2/file1.c...
+[0;32msource2/file1.c compiled successfully![0m
+Executing source2/file1.c...
+Hello from file1.c
+[0;32msource2/file1.c executed successfully.[0m
+Running tests on source2/file1.c
+[0;32msource2/file1.c output matches the test file.
+[0m----------------------------------------------------------------------------------------
+[0;31mThe following 1 out of 5 files FAILED at compilation:
+ 1. file3.c
 
-[0m--------------------------------------------
-Trying to compile source/file3.c...
-[0;32msource/file3.c compiled successfully![0m
-Executing source/file3.c...
-Hello from file3.c
-[0;31mProgram execution failed with exit code 1.[0m
-[0m--------------------------------------------
-Trying to compile source/source2/file1.c...
-[0;31mCompilation failed for source/source2/file1.c.[0m
-[0;31msource/source2/file1.c: In function 'main':
-[0;31msource/source2/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
-[0m--------------------------------------------
-Trying to compile source/file1.c...
-[0;31mCompilation failed for source/file1.c.[0m
-[0;31msource/file1.c: In function 'main':
-[0;31msource/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
-[0m--------------------------------------------
-Trying to compile source/file2.c...
-[0;32msource/file2.c compiled successfully![0m
-Executing source/file2.c...
-Hello from  file2.c
-[0;32msource/file2.c executed successfully.[0m
-Running checks on source/file2.c
-[0;31mTest FAILED at source/file2.c:
-Actual output:
-Hello from  file2.c
-Expected output:
-Hello from file2.c
-[0m--------------------------------------------
-Trying to compile source/file3.c...
-[0;32msource/file3.c compiled successfully![0m
-Executing source/file3.c...
-Hello from file3.c
-[0;31mProgram execution failed with exit code 1.[0m
-[0m--------------------------------------------
-Trying to compile source/source2/file1.c...
-[0;31mCompilation failed for source/source2/file1.c.[0m
-[0;31msource/source2/file1.c: In function 'main':
-[0;31msource/source2/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
-[0m--------------------------------------------
-Trying to compile source/file1.c...
-[0;31mCompilation failed for source/file1.c.[0m
-[0;31msource/file1.c: In function 'main':
-[0;31msource/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
-[0m--------------------------------------------
-Trying to compile source/file2.c...
-[0;32msource/file2.c compiled successfully![0m
-Executing source/file2.c...
-Hello from  file2.c
-[0;32msource/file2.c executed successfully.[0m
-Running checks on source/file2.c
-[0;31mTest FAILED at source/file2.c:
-Actual output:
-Hello from  file2.c
-Expected output:
-Hello from file2.c
-[0m--------------------------------------------
-Trying to compile source/file3.c...
-[0;32msource/file3.c compiled successfully![0m
-Executing source/file3.c...
-Hello from file3.c
-[0;31mProgram execution failed with exit code 1.[0m
-[0m--------------------------------------------
-Trying to compile source/source2/file1.c...
-[0;31mCompilation failed for source/source2/file1.c.[0m
-[0;31msource/source2/file1.c: In function 'main':
-[0;31msource/source2/file1.c:5:5: error: expected ';' before 'return'
-[0;31m     return 0;
-[0;31m     ^~~~~~
+[0m----------------------------------------------------------------------------------------
+[0;31mThe following 1 out of 3 tests FAILED.
+ 1. file2.c
+
+[0m----------------------------------------------------------------------------------------
+[0;33mThe following 1 files have no corresponding test files:
+ 1. source2/file1 copy.c
+
+[0m----------------------------------------------------------------------------------------
+[0mScript took 0 minutes and 4 seconds to run.
