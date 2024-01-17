@@ -4,10 +4,10 @@
 
 SECONDS=0
 COMPILATION_FAILED_INDEX=0
-CHECK_INDEX=0
-CHECK_FAILED_INDEX=0
-CHECK_TODO_INDEX=0
-CHECK_TODO_STRING=""
+TEST_INDEX=0
+TEST_FAILED_INDEX=0
+TEST_TODO_INDEX=0
+TEST_TODO_STRING=""
 FILE_INDEX=0
 COMPILATION_FAILED_STRING=""
 LOG_FILE="frameworklogs.txt"
@@ -17,13 +17,13 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 SOURCE_FOLDER=""
-CHECK_FOLDER=""
+TEST_FOLDER=""
 OUTPUT_FOLDER="Output"
 
 #---------- HELP FLAG ----------
 
 if [[ $1 == "--help" ]]; then
-    echo -e "${YELLOW}Syntax: ./framework.sh <source_folder> <checks_folder> <output_folder>"
+    echo -e "${YELLOW}Syntax: ./framework.sh <source_folder> <tests_folder> <output_folder>"
     echo -e "${YELLOW}The first 2 arguments are mandatory and the third one is optional."
     echo -e "${YELLOW}If no output_folder is given, then it will be automatically created as Output."
     echo -e "${YELLOW}If the output_folder given doesn't exist, then an output_folder will be created with the given name."
@@ -35,7 +35,7 @@ fi
 if [[ $# -le 1 ]]; then
     echo -e "${RED}Not enough arguments given! Minimum number of arguments: 2 -->\n
     1: Path to source directory with .c files\n
-    2: Path to Tests directory with .check files"
+    2: Path to Tests directory with .test files"
     exit
 fi
 
@@ -43,7 +43,7 @@ fi
 
 if [[ $# -eq 2 ]]; then
     SOURCE_FOLDER=$1
-    CHECK_FOLDER=$2
+    TEST_FOLDER=$2
     mkdir -p "$OUTPUT_FOLDER"
     if [[ ! -d $2 ]]; then
         echo "No such path to a directory: $2"
@@ -53,7 +53,7 @@ fi
 
 if [[ $# -eq 3 ]]; then
     SOURCE_FOLDER=$1
-    CHECK_FOLDER=$2
+    TEST_FOLDER=$2
     OUTPUT_FOLDER=$3
     if [[ ! -d $2 ]]; then
         echo "No such path to a directory: $2"
@@ -130,39 +130,39 @@ run_program() {
 }
 
 # RUNNING FUNCTION
-# 1. Receives source files, check files and their paths.
-# 2. Compares source files output to expected output from check files
-# 3. If successful displays success message, increments check success index, returns.
-# 4. If failed, displays error message, increments check failed index, returns.
-# 5. If no checks are found, displays warning message, increments checks todo index, returns.
+# 1. Receives source files, test files and their paths.
+# 2. Compares source files output to expected output from test files
+# 3. If successful displays success message, increments test success index, returns.
+# 4. If failed, displays error message, increments test failed index, returns.
+# 5. If no tests are found, displays warning message, increments tests todo index, returns.
 # ---------------------------------------------------------------------------------------
 
 compare_output() {
     local source_file="$1"
     local relative_path="${source_file#$SOURCE_FOLDER/}"
     local output_file="$OUTPUT_FOLDER/$(basename "$source_file" .c)"
-    echo "Running checks on $relative_path"
-    local check_file="$CHECK_FOLDER/$(basename "$source_file" .c).check"
-    if [ -e "$check_file" ]; then
-        ((CHECK_INDEX++))
-        diff_output=$(diff <("$output_file") "$check_file")
+    echo "Running tests on $relative_path"
+    local test_file="$TEST_FOLDER/$(basename "$source_file" .c).test"
+    if [ -e "$test_file" ]; then
+        ((TEST_INDEX++))
+        diff_output=$(diff <("$output_file") "$test_file")
         if [ -z "$diff_output" ]; then
-            echo -e "${GREEN}$relative_path output matches the check file."
+            echo -e "${GREEN}$relative_path output matches the test file."
             return 0
         else
-            ((CHECK_FAILED_INDEX++))
-            CHECK_FAILED_STRING="$CHECK_FAILED_STRING $CHECK_FAILED_INDEX. $relative_path\n"
+            ((TEST_FAILED_INDEX++))
+            TEST_FAILED_STRING="$TEST_FAILED_STRING $TEST_FAILED_INDEX. $relative_path\n"
             echo -e "${RED}Test FAILED at $relative_path:"
             echo "Actual output:"
             "$output_file"
             echo "Expected output:"
-            cat "$check_file"
+            cat "$test_file"
             return 1
         fi
     else
-        ((CHECK_TODO_INDEX++))
-        CHECK_TODO_STRING="$CHECK_TODO_STRING $CHECK_TODO_INDEX. $relative_path\n"
-        echo "No check file found for $relative_path."
+        ((TEST_TODO_INDEX++))
+        TEST_TODO_STRING="$TEST_TODO_STRING $TEST_TODO_INDEX. $relative_path\n"
+        echo "No test file found for $relative_path."
         return 1
     fi
 }
@@ -180,7 +180,7 @@ duration=$SECONDS
 
 echo -e "${NC}----------------------------------------------------------------------------------------"
 
-if [[ COMPILATION_INDEX -eq 0 ]]; then
+if [[ COMPILATION_FAILED_INDEX -eq 0 ]]; then
     echo -e "${GREEN}All $FILE_INDEX files compiled successfully"
 else
     echo -e "${RED}The following $COMPILATION_FAILED_INDEX out of $FILE_INDEX files FAILED at compilation:\n$COMPILATION_FAILED_STRING"
@@ -188,16 +188,16 @@ fi
 
 echo -e "${NC}----------------------------------------------------------------------------------------"
 
-if [[ CHECK_FAILED_INDEX -eq 0 ]]; then
-    echo -e "${GREEN}All $CHECK_INDEX checks had the expected results."
+if [[ TEST_FAILED_INDEX -eq 0 ]]; then
+    echo -e "${GREEN}All $TEST_INDEX tests had the expected results."
     echo -e "${NC}----------------------------------------------------------------------------------------"
 else
-    echo -e "${RED}The following $CHECK_FAILED_INDEX out of $CHECK_INDEX checks FAILED.\n$CHECK_FAILED_STRING"
+    echo -e "${RED}The following $TEST_FAILED_INDEX out of $TEST_INDEX tests FAILED.\n$TEST_FAILED_STRING"
     echo -e "${NC}----------------------------------------------------------------------------------------"
 fi
 
-if [[ CHECK_TODO_INDEX -gt 0 ]]; then
-    echo -e "${YELLOW}The following $CHECK_TODO_INDEX files have no corresponding check files:\n$CHECK_TODO_STRING"
+if [[ TEST_TODO_INDEX -gt 0 ]]; then
+    echo -e "${YELLOW}The following $TEST_TODO_INDEX files have no corresponding test files:\n$TEST_TODO_STRING"
     echo -e "${NC}----------------------------------------------------------------------------------------"
 fi
 
