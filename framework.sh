@@ -40,13 +40,17 @@ if [[ $# -le 1 ]]; then
 fi
 
 #---------- ARGUMENTS VALIDATION ----------
+if [[ ! -d $1 ]]; then
+    echo -e "${RED}Error at argument 1: No such path to a directory: $1"
+    exit
+fi
 
 if [[ $# -eq 2 ]]; then
     SOURCE_FOLDER=$1
     TEST_FOLDER=$2
     mkdir -p "$OUTPUT_FOLDER"
     if [[ ! -d $2 ]]; then
-        echo "No such path to a directory: $2"
+        echo -e "${RED}Error at argument 2: No such path to a directory: $2"
         exit
     fi
 fi
@@ -56,7 +60,7 @@ if [[ $# -eq 3 ]]; then
     TEST_FOLDER=$2
     OUTPUT_FOLDER=$3
     if [[ ! -d $2 ]]; then
-        echo "No such path to a directory: $2"
+        echo -e "${RED}Error at argument 2: No such path to a directory: $2"
         exit
     fi
     if [[ ! -d $3 ]]; then
